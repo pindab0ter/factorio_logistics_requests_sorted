@@ -1,9 +1,41 @@
 local inventory_sort = {}
 
+local quality_order = {
+    ["normal"] = 1,
+    ["uncommon"] = 2,
+    ["rare"] = 3,
+    ["epic"] = 4,
+    ["legendary"] = 5,
+}
+
+local comparator_order = {
+    ["<"] = 1,
+    ["≤"] = 2,
+    ["<="] = 3,
+    ["="] = 4,
+    ["≠"] = 5,
+    ["!="] = 6,
+    [">="] = 7,
+    ["≥"] = 8,
+    [">"] = 9,
+}
+
+--- @param a LogisticFilter?
+--- @param b LogisticFilter?
+--- @return boolean
+local logistic_filter_comparator = function(a, b)
+    if a == nil or a.value == nil or b == nil or b.value == nil then
+        return false
+    end
+
+    return quality_order[a.value.quality] < quality_order[b.value.quality]
+        or comparator_order[a.value.comparator] < comparator_order[b.value.comparator]
+end
+
 --- Use Inventory.sort_and_merge() to sort the logistic sections
 --- @param entity LuaEntity
 inventory_sort.sort_logistic_sections = function(entity)
-    if entity == nil then
+    if entity == nil or not entity.valid then
         return
     end
 
@@ -34,24 +66,25 @@ inventory_sort.sort_logistic_sections = function(entity)
 
     -- Record each request section's filters into an inventory and save the filters into a table
     for _, section in pairs(sections) do
+        -- TODO: Refactor into `sort_section`
         if section.is_manual then
             local inventory = game.create_inventory(section.filters_count)
-            local filters = {}
+            local filter_sets = {}
 
-            for filter_index, filter in pairs(section.filters) do
+            local i = 1
+            for _, filter in pairs(section.filters) do
                 if filter.value and filter.value.name then
                     inventory.insert({ name = filter.value.name })
 
-                    if not filters[filter.value.name] then
-                        filters[filter.value.name] = {}
+                    if not filter_sets[filter.value.name] then
+                        filter_sets[filter.value.name] = {}
                     end
 
-                    -- TODO: Sort filters by rarity and comparator
-                    filters[filter.value.name][filter_index] = filter
+                    filter_sets[filter.value.name][i] = filter
+                    i = i + 1
                 end
             end
 
-            log(serpent.block(filters))
             inventory.sort_and_merge()
             -- TODO: Continue if inventory sorting changed nothing
 
@@ -62,9 +95,13 @@ inventory_sort.sort_logistic_sections = function(entity)
             local section_index = 1
 
             for _, item in pairs(inventory.get_contents()) do
-                local filter = filters[item.name]
-                for _, f in pairs(filter) do
-                    test_section.set_slot(section_index, f)
+                local filters = filter_sets[item.name]
+                table.sort(filters, logistic_filter_comparator)
+
+                print("Filters: ", serpent.block(filters))
+
+                for _, filter in pairs(filters) do
+                    test_section.set_slot(section_index, filter)
                     section_index = section_index + 1
                 end
             end
