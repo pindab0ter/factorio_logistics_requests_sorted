@@ -7,7 +7,7 @@ data:extend({
     },
     {
         type = "shortcut",
-        name = "sorted-logistic-sections-enabled",
+        name = "sorted-logistic-sections-toggle",
         action = "lua",
         toggleable = true,
         icon = "__sorted-logistic-sections__/graphics/shortcut_32.png",
