@@ -69,9 +69,18 @@ local function sort_section(section)
     -- Insert the filters back in, in the order of the sorted inventory
     for _, item in pairs(inventory.get_contents()) do
         local filters = filter_sets[item.name]
-        table.sort(filters, logistic_filter_comparator)
 
-        for _, filter in pairs(filters) do
+        -- Remove nil values from filters
+        local cleaned_filters = {}
+        for i, filter in pairs(filters) do
+            if filter ~= nil then
+                cleaned_filters[i] = filter
+            end
+        end
+
+        table.sort(cleaned_filters, logistic_filter_comparator)
+
+        for _, filter in pairs(cleaned_filters) do
             section.set_slot(section_index, filter)
             section_index = section_index + 1
         end
