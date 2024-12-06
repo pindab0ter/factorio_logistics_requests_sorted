@@ -1,26 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.2.0
-Date: 2023-11-26
-  Changes:
-    - Changed mod enable/disable setting to shortcut bar toggle button for quick access
-    - Added optional keybinding for the toggle, unset by default
----------------------------------------------------------------------------------------------------
-Version: 1.1.1
-Date: 2021-10-05
-  Changes:
-    - Added translation to Russian
-  Info:
-    - Clarified players need to touch logistic requests once when enabling this mod in a running game
----------------------------------------------------------------------------------------------------
-Version: 1.1.0
-Date: 2021-08-21
-  Changes:
-    - Also sort inventory of vehicles with logistic slots (spidertron)
----------------------------------------------------------------------------------------------------
-Version: 1.0.0
-Date: 2021-01-30
+Version: 0.1.0
+Date: 2024-12-06
   Features:
     - Initial release
-  Changes:
-  Bugfixes:
-  Info:

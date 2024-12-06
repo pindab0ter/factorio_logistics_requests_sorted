@@ -1,13 +1,11 @@
 {
-    "name": "logistics_requests_sorted",
-    "version": "1.2.0",
-    "title": "Logistics Requests Sorted",
-    "author": "tulius",
-    "contact": "",
-    "homepage": "",
-    "factorio_version": "2.0",
-    "dependencies": [
-        "base >= 2.0"
-    ],
-    "description": "Keeps your logistics requests permanently sorted"
+  "name": "sorted-logistic-sections",
+  "version": "1.0.0",
+  "title": "Sorted Logistics Sections",
+  "author": "pindab0ter",
+  "contact": "",
+  "homepage": "https://github.com/pindab0ter/sorted-logistic-sections",
+  "factorio_version": "2.0",
+  "dependencies": ["base >= 2.0"],
+  "description": "Keeps your logistic sections permanently sorted"
 }

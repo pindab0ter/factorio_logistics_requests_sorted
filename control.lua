@@ -1,7 +1,7 @@
 local inventory = require("scripts/inventory")
 
 local function update_button(player)
-    player.set_shortcut_toggled("logistics_requests_sorted-enabled", storage.sorting_enabled[player.index])
+    player.set_shortcut_toggled("sorted-logistic-sections-enabled", storage.sorting_enabled[player.index])
 end
 
 --- @param player LuaPlayer
@@ -75,4 +75,4 @@ script.on_event(defines.events.on_player_created, on_player_created)
 script.on_event(defines.events.on_player_removed, on_player_removed)
 script.on_event(defines.events.on_entity_logistic_slot_changed, on_entity_logistic_slot_changed)
 script.on_event(defines.events.on_lua_shortcut, on_lua_shortcut)
-script.on_event("logistics_requests_sorted-hotkey", on_lua_shortcut)
+script.on_event("sorted-logistic-sections-hotkey", on_lua_shortcut)
