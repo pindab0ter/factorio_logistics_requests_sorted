@@ -20,72 +20,105 @@ local comparator_order = {
     [">"] = 9,
 }
 
---- @param a LogisticFilter?
---- @param b LogisticFilter?
---- @return boolean
-local logistic_filter_comparator = function(a, b)
-    if a == nil or a.value == nil or b == nil or b.value == nil then
-        return false
+--- @param filter LogisticFilter
+--- @return LuaPrototypeBase
+local get_prototype = function(filter)
+    local prototype = nil
+
+    if filter.value.type == "space-location" then
+        prototype = prototypes.space_location[filter.value.name]
+    elseif filter.value.type == "item" then
+        prototype = prototypes.item[filter.value.name]
+    elseif filter.value.type == "virtual" then
+        prototype = prototypes.virtual_signal[filter.value.name]
+    elseif filter.value.type == "fluid" then
+        prototype = prototypes.fluid[filter.value.name]
+    elseif filter.value.type == "entity" then
+        prototype = prototypes.entity[filter.value.name]
+    elseif filter.value.type == "recipe" then
+        prototype = prototypes.recipe[filter.value.name]
+    elseif filter.value.type == "quality" then
+        prototype = prototypes.quality[filter.value.name]
     end
 
-    return quality_order[a.value.quality] < quality_order[b.value.quality]
-        or comparator_order[a.value.comparator] < comparator_order[b.value.comparator]
+    if prototype == nil then
+        error("Prototype not found: " .. filter.value.name)
+    end
+
+    return prototype
+end
+
+--- @param a LogisticFilter
+--- @param b LogisticFilter
+--- @return boolean
+local filter_comparator = function(a, b)
+    if a == nil or a.value == nil or b == nil or b.value == nil then
+        error("Found nil, expected LogisticFilter")
+    end
+
+    local prototype_a = get_prototype(a)
+    local prototype_b = get_prototype(b)
+
+    if prototype_a == nil or prototype_b == nil then
+        error("Found nil, expected LuaPrototypeBase")
+    end
+
+    if prototype_a.group.order ~= prototype_b.group.order then
+        return prototype_a.group.order < prototype_b.group.order
+    end
+
+    if prototype_a.subgroup.order ~= prototype_b.subgroup.order then
+        return prototype_a.subgroup.order < prototype_b.subgroup.order
+    end
+
+    if prototype_a.order ~= prototype_b.order then
+        return prototype_a.order < prototype_b.order
+    end
+
+    if a.value.quality ~= b.value.quality then
+        return quality_order[a.value.quality] < quality_order[b.value.quality]
+    end
+
+    if a.value.comparator ~= b.value.comparator then
+        return comparator_order[a.value.comparator] < comparator_order[b.value.comparator]
+    end
+
+    return false
 end
 
 --- Sorts the filter item order using a `LuaInventory` and then sorts the filters with the same items by quality and
 --- comparator.
---- TODO: Find out why sometomes the sorting doesn't go well the first time.
 --- @param section LuaLogisticSection
 local function sort_section(section)
-    local inventory = game.create_inventory(section.filters_count)
-    --- @type table<string, table<number, LogisticFilter>>
-    local filter_sets = {}
+    ---@type table<number, LogisticFilter>
+    local filter_buffer = {}
 
-    local i = 1
+    local filter_buffer_index = 1
     for _, filter in pairs(section.filters) do
-        if filter.value and filter.value.name then
-            inventory.insert({ name = filter.value.name })
-
-            if not filter_sets[filter.value.name] then
-                filter_sets[filter.value.name] = {}
-            end
-
-            filter_sets[filter.value.name][i] = filter
-            i = i + 1
+        if filter == nil or not filter.value then
+            goto continue
         end
+
+        filter_buffer[filter_buffer_index] = filter
+        filter_buffer_index = filter_buffer_index + 1
+
+        ::continue::
     end
 
-    -- TODO: Skip further processing if the inventory order has not changed?
-    inventory.sort_and_merge()
+    table.sort(filter_buffer, filter_comparator)
 
     -- Clear all filters from the section so we can re-add them in the correct order without running into conflicts
     for index, _ in pairs(section.filters) do
         section.clear_slot(index)
     end
 
-    -- Manually track where we should add the next filter, as each item can have multiple filters
-    local section_index = 1
-
     -- Insert the filters back in, in the order of the sorted inventory
-    for _, item in pairs(inventory.get_contents()) do
-        local filters = filter_sets[item.name]
-
-        -- Remove nil values from filters
-        local cleaned_filters = {}
-        for i, filter in pairs(filters) do
-            if filter ~= nil then
-                cleaned_filters[i] = filter
-            end
-        end
-
-        table.sort(cleaned_filters, logistic_filter_comparator)
-
-        for _, filter in pairs(cleaned_filters) do
-            section.set_slot(section_index, filter)
-            section_index = section_index + 1
-        end
+    local slot_index = 1
+    for _, filter in pairs(filter_buffer) do
+        print(serpent.block(filter))
+        section.set_slot(slot_index, filter)
+        slot_index = slot_index + 1
     end
-    inventory.destroy()
 end
 
 --- @param entity LuaEntity
