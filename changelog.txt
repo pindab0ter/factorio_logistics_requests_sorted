@@ -4,7 +4,7 @@ Date: 2024-12-07
   Features:
     - Added support for sorting anything you can put in a logistic section
   Bugfixes:
-    - Fixed sorting sometimes not sorting correctly the first time
+    - Fixed sections sometimes not sorting correctly the first time
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2024-12-06
