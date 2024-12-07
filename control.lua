@@ -36,6 +36,7 @@ local function on_configuration_changed()
     if storage.sorting_enabled == nil then
         storage.sorting_enabled = {}
     end
+    storage.last_sorted_on_tick = {}
 
     for _, player in pairs(game.players) do
         if storage.sorting_enabled[player.index] == nil then
@@ -55,14 +56,28 @@ local function toggle_sorting_enabled(player)
     return sorting_enabled
 end
 
+--- For some reason the event is always triggered twice, so we ignore the second one
+--- @param entity LuaEntity
+--- @return boolean
+local function was_sorted_this_tick(entity)
+    if storage.last_sorted_on_tick == nil then
+        storage.last_sorted_on_tick = {}
+    end
+
+    if storage.last_sorted_on_tick[entity.unit_number] == game.tick then
+        return true
+    else
+        storage.last_sorted_on_tick[entity.unit_number] = game.tick
+    end
+end
+
 --------------------
 -- Event Handlers --
 --------------------
 
 --- @param event EventData.on_entity_logistic_slot_changed
 local function on_entity_logistic_slot_changed(event)
-    -- Only if player changed it directly
-    if event.player_index == nil then
+    if was_sorted_this_tick(event.entity) or event.player_index == nil then
         return
     end
 
