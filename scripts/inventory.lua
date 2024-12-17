@@ -14,7 +14,7 @@ local comparator_order = {
 
 --- @param filter LogisticFilter
 --- @return LuaPrototypeBase
-local get_prototype = function(filter)
+local function get_prototype(filter)
     local prototype = nil
 
     if filter.value.type == "space-location" then
@@ -43,7 +43,7 @@ end
 --- @param a LogisticFilter
 --- @param b LogisticFilter
 --- @return boolean
-local filter_comparator = function(a, b)
+local function filter_comparator(a, b)
     if a == nil or a.value == nil or b == nil or b.value == nil then
         error("Found nil, expected LogisticFilter")
     end
@@ -116,7 +116,6 @@ local function sort_section(section)
     -- Insert the filters back in, in the order of the sorted inventory
     local slot_index = 1
     for _, filter in pairs(filter_buffer) do
-        print(serpent.block(filter))
         section.set_slot(slot_index, filter)
         slot_index = slot_index + 1
     end
