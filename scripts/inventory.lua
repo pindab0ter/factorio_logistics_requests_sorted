@@ -1,13 +1,5 @@
 local inventory_sort = {}
 
-local quality_order = {
-    ["normal"] = 1,
-    ["uncommon"] = 2,
-    ["rare"] = 3,
-    ["epic"] = 4,
-    ["legendary"] = 5,
-}
-
 local comparator_order = {
     ["<"] = 1,
     ["≤"] = 2,
@@ -76,7 +68,16 @@ local filter_comparator = function(a, b)
     end
 
     if a.value.quality ~= b.value.quality then
-        return quality_order[a.value.quality] < quality_order[b.value.quality]
+        --- @type LuaQualityPrototype
+        local quality_a = prototypes.quality[a.value.quality]
+        --- @type LuaQualityPrototype
+        local quality_b = prototypes.quality[b.value.quality]
+
+        if quality_a == nil or quality_b == nil then
+            error("Found nil, expected LuaQualityPrototype")
+        end
+
+        return quality_a.order < quality_b.order
     end
 
     if a.value.comparator ~= b.value.comparator then
