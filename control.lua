@@ -24,6 +24,10 @@ local function apply_sorting_if_enabled(player, entity)
         return
     end
 
+    if not player.valid or not entity.valid then
+        return
+    end
+
     inventory.sort_logistic_sections(entity)
 end
 
