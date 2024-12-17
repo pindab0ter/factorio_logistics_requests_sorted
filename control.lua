@@ -41,13 +41,12 @@ local function was_sorted_this_tick(entity)
         storage.last_sorted_on_tick = {}
     end
 
-    if storage.last_sorted_on_tick[entity.unit_number] == game.tick then
-        return true
-    else
+    if not (storage.last_sorted_on_tick[entity.unit_number] == game.tick) then
         storage.last_sorted_on_tick[entity.unit_number] = game.tick
+        return false
     end
 
-    return false
+    return true
 end
 
 --------------------
