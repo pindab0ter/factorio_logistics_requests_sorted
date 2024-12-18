@@ -1,13 +1,5 @@
 local inventory_sort = {}
 
-local quality_order = {
-    ["normal"] = 1,
-    ["uncommon"] = 2,
-    ["rare"] = 3,
-    ["epic"] = 4,
-    ["legendary"] = 5,
-}
-
 local comparator_order = {
     ["<"] = 1,
     ["≤"] = 2,
@@ -22,7 +14,7 @@ local comparator_order = {
 
 --- @param filter LogisticFilter
 --- @return LuaPrototypeBase
-local get_prototype = function(filter)
+local function get_prototype(filter)
     local prototype = nil
 
     if filter.value.type == "space-location" then
@@ -51,7 +43,7 @@ end
 --- @param a LogisticFilter
 --- @param b LogisticFilter
 --- @return boolean
-local filter_comparator = function(a, b)
+local function filter_comparator(a, b)
     if a == nil or a.value == nil or b == nil or b.value == nil then
         error("Found nil, expected LogisticFilter")
     end
@@ -76,7 +68,16 @@ local filter_comparator = function(a, b)
     end
 
     if a.value.quality ~= b.value.quality then
-        return quality_order[a.value.quality] < quality_order[b.value.quality]
+        --- @type LuaQualityPrototype
+        local quality_a = prototypes.quality[a.value.quality]
+        --- @type LuaQualityPrototype
+        local quality_b = prototypes.quality[b.value.quality]
+
+        if quality_a == nil or quality_b == nil then
+            error("Found nil, expected LuaQualityPrototype")
+        end
+
+        return quality_a.order < quality_b.order
     end
 
     if a.value.comparator ~= b.value.comparator then
@@ -115,7 +116,6 @@ local function sort_section(section)
     -- Insert the filters back in, in the order of the sorted inventory
     local slot_index = 1
     for _, filter in pairs(filter_buffer) do
-        print(serpent.block(filter))
         section.set_slot(slot_index, filter)
         slot_index = slot_index + 1
     end

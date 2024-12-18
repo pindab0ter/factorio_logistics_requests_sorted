@@ -1,10 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 2024-12-18
+  Features:
+    - Added support for custom qualities, e.g. from the Quality Plus mod
+  Bugfixes:
+    - Fixed updates enabling sorting if it was disabled
+---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2024-12-07
   Features:
     - Added support for sorting anything you can put in a logistic section
   Bugfixes:
-    - Fixed sorting sometimes not sorting correctly the first time
+    - Fixed sections sometimes not sorting correctly the first time
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2024-12-06
