@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 2024-12-18
+  Features:
+    - Added support for custom qualities, e.g. from the Quality Plus mod
+  Bugfixes:
+    - Fixed updates enabling sorting if it was disabled
+---------------------------------------------------------------------------------------------------
 Version: 1.1.0
 Date: 2024-12-07
   Features:
