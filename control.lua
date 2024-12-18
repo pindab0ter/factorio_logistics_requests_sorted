@@ -1,9 +1,9 @@
 local inventory = require("scripts/inventory")
 
 --- @param player LuaPlayer
---- @param enabled boolean
+--- @param enabled boolean?
 local function set_sorting_enabled(player, enabled)
-    storage.sorting_enabled[player.index] = enabled
+    storage.sorting_enabled[player.index] = (enabled or false)
     player.set_shortcut_toggled("sorted-logistic-sections-toggle", enabled)
 end
 
@@ -20,7 +20,7 @@ end
 --- @param player LuaPlayer
 --- @param entity LuaEntity
 local function apply_sorting_if_enabled(player, entity)
-    if storage.sorting_enabled[player.index] then
+    if not storage.sorting_enabled[player.index] then
         return
     end
 
@@ -32,8 +32,8 @@ local function apply_sorting_if_enabled(player, entity)
 end
 
 --- @param player LuaPlayer
-local function initialize_player(player)
-    set_sorting_enabled(player, true)
+local function configure_player(player)
+    set_sorting_enabled(player)
     apply_sorting_if_enabled(player, player.character)
 end
 
@@ -53,6 +53,7 @@ local function was_sorted_this_tick(entity)
     return true
 end
 
+
 --------------------
 -- Event Handlers --
 --------------------
@@ -65,7 +66,7 @@ local function on_configuration_changed()
 
     for _, player in pairs(game.players) do
         if storage.sorting_enabled[player.index] == nil then
-            initialize_player(player)
+            configure_player(player)
         end
     end
 end
@@ -73,7 +74,7 @@ end
 --- @param event EventData.on_player_created
 local function on_player_created(event)
     local player = game.players[event.player_index] or error("Player " .. event.player_index .. " not found")
-    initialize_player(player)
+    configure_player(player)
 end
 
 --- @param event EventData.on_player_removed
