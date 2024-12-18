@@ -3,7 +3,8 @@ local inventory = require("scripts/inventory")
 --- @param player LuaPlayer
 --- @param enabled boolean?
 local function set_sorting_enabled(player, enabled)
-    storage.sorting_enabled[player.index] = (enabled or false)
+    enabled = enabled or false
+    storage.sorting_enabled[player.index] = enabled
     player.set_shortcut_toggled("sorted-logistic-sections-toggle", enabled)
 end
 
